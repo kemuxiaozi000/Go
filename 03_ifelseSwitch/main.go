@@ -51,6 +51,13 @@ func div(a, b int) (q, r int) {
 	return a / b, a % b
 }
 
+func forever() {
+	// 死循环
+	for {
+		fmt.Println("abc")
+	}
+}
+
 func main() {
 	const filename = "abc.txt"
 	// if contents, err := ioutil.ReadFile(filename); err != nil {
@@ -65,9 +72,7 @@ func main() {
 		convertToBin(12),
 	)
 
-	fmt.Println(
-		printFile(filename),
-	)
+	printFile(filename)
 
 	fmt.Println(
 		grade(0),
@@ -81,4 +86,6 @@ func main() {
 
 	a, b := div(13, 3)
 	fmt.Println(a, b)
+
+	forever()
 }
