@@ -10,6 +10,7 @@ type treeNode struct {
 // 为结构体创建方法 （接收者）
 func (node treeNode) print() {
 	fmt.Println(node.value)
+	return
 }
 
 // 只有使用指针才可以改变结构内容
