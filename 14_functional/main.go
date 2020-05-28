@@ -1,35 +1,33 @@
 package main
 
-import (
-	"bufio"
-	"fmt"
-	"os"
-)
+import "fmt"
 
-func tryDefer() {
-	defer fmt.Println(1)
-	defer fmt.Println(2)
-	fmt.Println(3)
-	panic("error occured")
-	fmt.Println(4)
+func adder() func(int) int {
+	sum := 0
+	return func(v int) int {
+		sum += v
+		return sum
+	}
 }
 
-func writeFile(fliename string) {
-	file, err := os.Create(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-	writer := bufio.NewWriter(file)
+type iAdder func(int) (int, iAdder)
 
-	// f := fib.Fibonacci()
-
-	for i := 0; i < 20; i++ {
-		fmt.Fprintln(writer, 1)
+func adder2(base int) iAdder {
+	return func(v int) (int, iAdder) {
+		return base + v, adder2(base + v)
 	}
 }
 
 func main() {
-	tryDefer()
-	writeFile("fib.txt")
+	a := adder()
+	for i := 0; i < 10; i++ {
+		fmt.Println(a(i))
+	}
+
+	b := adder2(0)
+	for i := 0; i < 10; i++ {
+		var s int
+		s, b = b(i)
+		fmt.Println(s)
+	}
 }
