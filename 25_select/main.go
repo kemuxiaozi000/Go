@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"time"
 )
 
@@ -11,7 +10,8 @@ func generator() chan int {
 	go func() {
 		i := 0
 		for {
-			time.Sleep(time.Duration(rand.Intn(1500)) * time.Millisecond)
+			// time.Sleep(time.Duration(rand.Intn(1500)) * time.Millisecond)
+			time.Sleep(5 * time.Second)
 			out <- i
 			i++
 		}
@@ -35,26 +35,25 @@ func main() {
 	var c1, c2 = generator(), generator()
 	// 非阻塞式 select + default
 	var w chan int
+	var values []int
 	n := 0
 	hasValue := false
 	for {
 		var activeWorker chan int // nil channel
+		var activeValue int
+		if hasValue {
+			activeWorker = w
+			activeValue = values[0]
+		}
 		select {
-		case <-c1:
-			w <- n
-			// fmt.Println("Receive from c1", n)
-			hasValue = true
-		case n := <-c2:
-			w <- n
-			hasValue = true
-		// fmt.Println("Receive from c2", n)
-		// default:
-		// 	fmt.Println("no value ")
-		case w <= n:
-			if hasValue {
-
-			}
-
+		case n = <-c1:
+			values = append(values, n)
+		case n = <-c2:
+			values = append(values, n)
+		// nil 的情况下不会执行
+		case activeWorker <- activeValue:
+			//把values第一个值拿走
+			values = values[1:]
 		}
 
 	}
